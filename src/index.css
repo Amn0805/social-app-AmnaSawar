@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Light (ivory) is the CSS default; the app applies the .dark class on
+   load so midnight slate is what people actually see by default. See
+   hooks/useLocalStorage 'darkMode' + Navbar for the toggle. */
+body {
+  @apply bg-cream text-ink font-body antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark body {
+  @apply bg-midnight text-paper;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #eee 0px, #f5f5f5 40px, #eee 80px);
+  background-size: 600px;
+}
+.dark .skeleton {
+  background: linear-gradient(90deg, #1a222b 0px, #232c37 40px, #1a222b 80px);
+  background-size: 600px;
+}
+
+:focus-visible {
+  outline: 2px solid #1FB88A;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
