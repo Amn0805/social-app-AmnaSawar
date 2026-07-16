@@ -6,7 +6,7 @@
 
 ## 🔗 Live Demo
 
-**[https://social-app-amna-khan.vercel.app](https://social-app-amna-khan.vercel.app)** <!-- replace with your actual deployed link -->
+**[https://social-app-amna-sarwar.vercel.app](https://social-app-amna-sawar.vercel.app)** 
 
 ---
 
