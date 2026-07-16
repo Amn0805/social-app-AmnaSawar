@@ -107,6 +107,7 @@ npm run preview
 
 ## 📁 Folder Structure
 
+```text
 social-app/
 ├── src/
 │   ├── components/
@@ -153,8 +154,7 @@ social-app/
 │   └── main.jsx
 ├── tailwind.config.js
 └── package.json
-
----
+```
 
 ---
 
