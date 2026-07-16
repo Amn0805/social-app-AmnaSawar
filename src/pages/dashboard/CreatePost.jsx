@@ -1,4 +1,8 @@
 // pages/dashboard/CreatePost.jsx
+
+console.log("Draft button clicked");
+
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
