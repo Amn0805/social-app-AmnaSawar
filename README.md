@@ -10,6 +10,12 @@
 
 ---
 
+## 🔗 Video Demo
+
+**[Video Demo](https://youtu.be/bt-7fvw0TYE)** 
+
+---
+
 ## 📸 Screenshots
 
 | Feed | Create Post |
