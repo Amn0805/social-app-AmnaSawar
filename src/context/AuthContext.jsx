@@ -27,7 +27,10 @@ export function AuthProvider({ children }) {
       joinedAt: new Date().toISOString(),
     };
 
-    storage.setUsers([...users, newUser]);
+    const success = storage.setUsers([...users, newUser]);
+    if (!success) {
+      throw new Error('Could not create your account — please try again.');
+    }
     return newUser;
   }
 
@@ -57,13 +60,22 @@ export function AuthProvider({ children }) {
     if (!currentUser) return;
 
     const merged = { ...currentUser, ...updatedFields };
-    setCurrentUser(merged);
-    storage.setCurrentUser(merged);
 
-    // Also persist into the users array so it survives next login
+    // Persist into the users array first — if this fails (e.g. quota
+    // exceeded from a large avatar image), don't update React state
+    // either, so the UI doesn't show a "success" that never actually saved.
     const users = storage.getUsers();
     const nextUsers = users.map((u) => (u.id === merged.id ? { ...u, ...updatedFields } : u));
-    storage.setUsers(nextUsers);
+    const usersSuccess = storage.setUsers(nextUsers);
+    const sessionSuccess = storage.setCurrentUser(merged);
+
+    if (!usersSuccess || !sessionSuccess) {
+      throw new Error(
+        'Could not save your profile — the image may be too large for browser storage. Try a smaller image.'
+      );
+    }
+
+    setCurrentUser(merged);
   }
 
   const value = {

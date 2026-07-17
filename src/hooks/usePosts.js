@@ -22,7 +22,12 @@ export function usePosts() {
       updatedAt: new Date().toISOString(),
     };
     const next = [...storage.getPosts(), newPost];
-    storage.setPosts(next);
+    const success = storage.setPosts(next);
+    if (!success) {
+      throw new Error(
+        'Could not save the post — the image may be too large for browser storage. Try a smaller image.'
+      );
+    }
     setPosts(next);
     return newPost;
   }
@@ -31,7 +36,12 @@ export function usePosts() {
     const next = storage.getPosts().map((p) =>
       p.id === postId ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
     );
-    storage.setPosts(next);
+    const success = storage.setPosts(next);
+    if (!success) {
+      throw new Error(
+        'Could not save the post — the image may be too large for browser storage. Try a smaller image.'
+      );
+    }
     setPosts(next);
   }
 

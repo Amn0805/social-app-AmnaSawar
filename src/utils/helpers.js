@@ -42,6 +42,38 @@ export function fileToBase64(file) {
   });
 }
 
+// Resizes + compresses an image before converting to base64. Raw phone
+// photos can be several MB, which quickly blows past localStorage's
+// ~5-10MB per-origin limit. This keeps stored images small (usually
+// well under 200KB) while still looking sharp at the sizes we display
+// them at (feed cards, post detail, avatars).
+export function compressImage(file, { maxWidth = 900, maxHeight = 900, quality = 0.75 } = {}) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Could not read image'));
+      img.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
 // Simple initials fallback for avatars, e.g. "Amna Khan" -> "A"
 export function getInitial(name) {
   return name?.trim()?.charAt(0)?.toUpperCase() || '?';

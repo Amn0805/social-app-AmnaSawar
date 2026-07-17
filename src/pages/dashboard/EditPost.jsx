@@ -14,36 +14,50 @@ export default function EditPost() {
   const [isSubmittingDraft, setIsSubmittingDraft] = useState(false);
   const [isSubmittingPublish, setIsSubmittingPublish] = useState(false);
   const [draftMessage, setDraftMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const post = posts.find((p) => p.id === postId);
 
+  // Post doesn't exist, or belongs to someone else — bounce back to My Posts
   if (!post || post.authorId !== currentUser.id) {
     return <Navigate to="/dashboard/posts" replace />;
   }
 
   function handleSaveDraft(data) {
     setIsSubmittingDraft(true);
-    updatePost(post.id, {
-      description: data.description,
-      image: data.image,
-      isPublic: data.isPublic,
-      isDraft: true,
-    });
-    setIsSubmittingDraft(false);
-    setDraftMessage('Post saved as draft');
-    setTimeout(() => setDraftMessage(''), 3000);
+    setErrorMessage('');
+    try {
+      updatePost(post.id, {
+        description: data.description,
+        image: data.image,
+        isPublic: data.isPublic,
+        isDraft: true,
+      });
+      setDraftMessage('Post saved as draft');
+      setTimeout(() => setDraftMessage(''), 3000);
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsSubmittingDraft(false);
+    }
   }
 
   function handlePublish(data) {
     setIsSubmittingPublish(true);
-    updatePost(post.id, {
-      description: data.description,
-      image: data.image,
-      isPublic: data.isPublic,
-      isDraft: false,
-    });
-    setIsSubmittingPublish(false);
-    navigate('/');
+    setErrorMessage('');
+    try {
+      updatePost(post.id, {
+        description: data.description,
+        image: data.image,
+        isPublic: data.isPublic,
+        isDraft: false,
+      });
+      navigate('/');
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsSubmittingPublish(false);
+    }
   }
 
   return (
@@ -55,6 +69,12 @@ export default function EditPost() {
       {draftMessage && (
         <div className="mb-4 text-sm text-brand-600 dark:text-brand-400 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2 animate-fadeUp">
           {draftMessage}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mb-4 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2 animate-fadeUp">
+          {errorMessage}
         </div>
       )}
 

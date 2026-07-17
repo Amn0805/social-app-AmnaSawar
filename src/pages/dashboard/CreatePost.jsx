@@ -1,8 +1,4 @@
 // pages/dashboard/CreatePost.jsx
-
-console.log("Draft button clicked");
-
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -17,34 +13,47 @@ export default function CreatePost() {
   const [isSubmittingDraft, setIsSubmittingDraft] = useState(false);
   const [isSubmittingPublish, setIsSubmittingPublish] = useState(false);
   const [draftMessage, setDraftMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [formKey, setFormKey] = useState(0); // bump to force PostForm to remount + clear
 
   function handleSaveDraft(data) {
     setIsSubmittingDraft(true);
-    createPost({
-      authorId: currentUser.id,
-      description: data.description,
-      image: data.image,
-      isPublic: data.isPublic,
-      isDraft: true,
-    });
-    setIsSubmittingDraft(false);
-    setDraftMessage('Post saved as draft');
-    setFormKey((k) => k + 1); // clears the form
-    setTimeout(() => setDraftMessage(''), 3000);
+    setErrorMessage('');
+    try {
+      createPost({
+        authorId: currentUser.id,
+        description: data.description,
+        image: data.image,
+        isPublic: data.isPublic,
+        isDraft: true,
+      });
+      setDraftMessage('Post saved as draft');
+      setFormKey((k) => k + 1); // clears the form
+      setTimeout(() => setDraftMessage(''), 3000);
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsSubmittingDraft(false);
+    }
   }
 
   function handlePublish(data) {
     setIsSubmittingPublish(true);
-    createPost({
-      authorId: currentUser.id,
-      description: data.description,
-      image: data.image,
-      isPublic: data.isPublic,
-      isDraft: false,
-    });
-    setIsSubmittingPublish(false);
-    navigate('/');
+    setErrorMessage('');
+    try {
+      createPost({
+        authorId: currentUser.id,
+        description: data.description,
+        image: data.image,
+        isPublic: data.isPublic,
+        isDraft: false,
+      });
+      navigate('/');
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsSubmittingPublish(false);
+    }
   }
 
   return (
@@ -56,6 +65,12 @@ export default function CreatePost() {
       {draftMessage && (
         <div className="mb-4 text-sm text-brand-600 dark:text-brand-400 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2 animate-fadeUp">
           {draftMessage}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mb-4 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2 animate-fadeUp">
+          {errorMessage}
         </div>
       )}
 

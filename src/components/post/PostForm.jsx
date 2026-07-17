@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
-import { fileToBase64 } from '../../utils/helpers';
+import { compressImage } from '../../utils/helpers';
 import Button from '../ui/Button';
 
 const MAX_CHARS = 500;
@@ -28,6 +28,8 @@ export default function PostForm({
 
   const [imagePreview, setImagePreview] = useState(defaultValues.image || null);
   const [intendedAction, setIntendedAction] = useState('publish');
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const [imageError, setImageError] = useState('');
 
   const description = watch('description') || '';
   const charCount = description.length;
@@ -35,8 +37,16 @@ export default function PostForm({
   async function handleImageChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const base64 = await fileToBase64(file);
-    setImagePreview(base64);
+    setImageError('');
+    setIsProcessingImage(true);
+    try {
+      const compressed = await compressImage(file);
+      setImagePreview(compressed);
+    } catch (err) {
+      setImageError('Could not process that image. Try a different file.');
+    } finally {
+      setIsProcessingImage(false);
+    }
   }
 
   function handleRemoveImage() {
@@ -126,15 +136,25 @@ export default function PostForm({
           </div>
         ) : (
           <label className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-ink/15 dark:border-surface-border rounded-xl py-8 cursor-pointer hover:border-brand-500 dark:hover:border-brand-400 transition-colors">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-mutedLight dark:text-muted">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="9" cy="9" r="2" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
-            <span className="text-sm text-mutedLight dark:text-muted">Click to upload an image</span>
-            <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+            {isProcessingImage ? (
+              <>
+                <div className="w-5 h-5 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+                <span className="text-sm text-mutedLight dark:text-muted">Processing image...</span>
+              </>
+            ) : (
+              <>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-mutedLight dark:text-muted">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+                <span className="text-sm text-mutedLight dark:text-muted">Click to upload an image</span>
+              </>
+            )}
+            <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" disabled={isProcessingImage} />
           </label>
         )}
+        {imageError && <p className="mt-1.5 text-xs text-rose-500">{imageError}</p>}
       </div>
 
       {/* Visibility */}
@@ -164,7 +184,7 @@ export default function PostForm({
           variant="secondary"
           onClick={() => setIntendedAction('draft')}
           isLoading={isSubmittingDraft}
-          disabled={charCount > MAX_CHARS}
+          disabled={charCount > MAX_CHARS || isProcessingImage}
         >
           Save as Draft
         </Button>
@@ -173,7 +193,7 @@ export default function PostForm({
           variant="primary"
           onClick={() => setIntendedAction('publish')}
           isLoading={isSubmittingPublish}
-          disabled={charCount > MAX_CHARS}
+          disabled={charCount > MAX_CHARS || isProcessingImage}
         >
           Publish
         </Button>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
-import { fileToBase64 } from '../../utils/helpers';
+import { compressImage } from '../../utils/helpers';
 import Avatar from '../../components/ui/Avatar';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -29,6 +29,8 @@ export default function ProfileSettings() {
   const [avatarPreview, setAvatarPreview] = useState(currentUser.avatar);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
 
   const bio = watch('bio') || '';
   const bioCount = bio.length;
@@ -36,21 +38,34 @@ export default function ProfileSettings() {
   async function handleAvatarChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const base64 = await fileToBase64(file);
-    setAvatarPreview(base64);
+    setIsProcessingImage(true);
+    try {
+      const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400 });
+      setAvatarPreview(compressed);
+    } catch (err) {
+      setErrorMessage('Could not process that image. Try a different file.');
+    } finally {
+      setIsProcessingImage(false);
+    }
   }
 
   function onSubmit(data) {
     setIsSubmitting(true);
-    updateCurrentUser({
-      name: data.name,
-      bio: data.bio,
-      location: data.location,
-      avatar: avatarPreview,
-    });
-    setIsSubmitting(false);
-    setSuccessMessage('Profile updated successfully');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    setErrorMessage('');
+    try {
+      updateCurrentUser({
+        name: data.name,
+        bio: data.bio,
+        location: data.location,
+        avatar: avatarPreview,
+      });
+      setSuccessMessage('Profile updated successfully');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -62,6 +77,12 @@ export default function ProfileSettings() {
       {successMessage && (
         <div className="mb-4 text-sm text-brand-600 dark:text-brand-400 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2 animate-fadeUp">
           {successMessage}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mb-4 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2 animate-fadeUp">
+          {errorMessage}
         </div>
       )}
 
@@ -79,9 +100,15 @@ export default function ProfileSettings() {
             <Avatar src={avatarPreview} name={currentUser.name} size="lg" />
             <label>
               <span className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-surface border border-ink/10 dark:border-surface-border text-ink dark:text-paper hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 cursor-pointer transition-colors">
-                Change photo
+                {isProcessingImage ? 'Processing...' : 'Change photo'}
               </span>
-              <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+                disabled={isProcessingImage}
+              />
             </label>
           </div>
         </div>
@@ -130,7 +157,7 @@ export default function ProfileSettings() {
         <Input label="Location" placeholder="e.g. Lahore, Pakistan" {...register('location')} />
 
         <div className="flex justify-end pt-1">
-          <Button type="submit" isLoading={isSubmitting}>
+          <Button type="submit" isLoading={isSubmitting} disabled={isProcessingImage}>
             Save Changes
           </Button>
         </div>

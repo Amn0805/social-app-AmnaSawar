@@ -24,8 +24,10 @@ function read(key, fallback) {
 function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch (err) {
     console.error(`storage: failed to write ${key}`, err);
+    return false;
   }
 }
 
