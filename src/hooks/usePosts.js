@@ -10,7 +10,8 @@ export function usePosts() {
 
   const refresh = useCallback(() => setPosts(storage.getPosts()), []);
 
-  function createPost({ authorId, description, image, isPublic, isDraft }) {
+    //post creation 
+  function createPost({ authorId, description, image, isPublic, isDraft }) {             
     const newPost = {
       id: generateId('post'),
       authorId,
@@ -21,8 +22,8 @@ export function usePosts() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    const next = [...storage.getPosts(), newPost];
-    const success = storage.setPosts(next);
+    const next = [...storage.getPosts(), newPost];  //add new post with existing 
+    const success = storage.setPosts(next);  //save in storage 
     if (!success) {
       throw new Error(
         'Could not save the post — the image may be too large for browser storage. Try a smaller image.'

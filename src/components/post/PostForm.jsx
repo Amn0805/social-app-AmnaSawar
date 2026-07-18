@@ -15,9 +15,9 @@ export default function PostForm({
   isSubmittingPublish = false,
 }) {
   const {
-    register,
+    register,             //data(discription name ky sath store hoti h )
     handleSubmit,
-    watch,
+    watch,   // continusously watch discription and counter update 
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -35,13 +35,13 @@ export default function PostForm({
   const charCount = description.length;
 
   async function handleImageChange(e) {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0];        //slected image milti h 
     if (!file) return;
     setImageError('');
     setIsProcessingImage(true);
     try {
-      const compressed = await compressImage(file);
-      setImagePreview(compressed);
+      const compressed = await compressImage(file);       //image compress hoti h 
+      setImagePreview(compressed);      //show on preview 
     } catch (err) {
       setImageError('Could not process that image. Try a different file.');
     } finally {
@@ -53,13 +53,13 @@ export default function PostForm({
     setImagePreview(null);
   }
 
-  function onSubmit(data) {
+  function onSubmit(data) {          //after submission it runs 
     const payload = {
       description: data.description.trim(),
       image: imagePreview,
       isPublic: data.isPublic === 'true',
     };
-    if (intendedAction === 'draft') {
+    if (intendedAction === 'draft') {       //decision of draft and public 
       onSaveDraft(payload);
     } else {
       onPublish(payload);

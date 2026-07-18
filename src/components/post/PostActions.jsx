@@ -1,29 +1,32 @@
-// components/post/PostActions.jsx
+// components/post/PostActions.jsx    handles specfic post likes and comments . first it chks user login or not if not then it redirects to login and if yes then it like/comment post 
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
-import { useAuth } from '../../hooks/useAuth';
-import { usePosts } from '../../hooks/usePosts';
+import clsx from 'clsx';      //apply conditional classes 
+import { useAuth } from '../../hooks/useAuth';      //current authentication statues leny ky liye 
+import { usePosts } from '../../hooks/usePosts';     //post related functions ky liye 
 
+//accept 3 props
 export default function PostActions({ postId, showComment = true, size = 'md' }) {
   const navigate = useNavigate();
-  const { currentUser, isAuthenticated } = useAuth();
-  const { toggleLike, isLikedBy, getLikeCount, getCommentCount } = usePosts();
+  const { currentUser, isAuthenticated } = useAuth();      //yha authentication chk ho rha
+  const { toggleLike, isLikedBy, getLikeCount, getCommentCount } = usePosts();    //taking post functions from usepost 
 
-  const [liked, setLiked] = useState(isLikedBy(postId, currentUser?.id));
+  const [liked, setLiked] = useState(isLikedBy(postId, currentUser?.id)); 
   const [likeCount, setLikeCount] = useState(getLikeCount(postId));
-  const [burst, setBurst] = useState(false);
+  const [burst, setBurst] = useState(false);       //control heart animation 
   const commentCount = getCommentCount(postId);
   const iconSize = size === 'lg' ? 20 : 18;
 
+
   function handleLikeClick(e) {
-    e?.stopPropagation();
-    if (!isAuthenticated) {
+    e?.stopPropagation();   //like krny pr parent postcard ka click event trigger na ho 
+    if (!isAuthenticated) { 
       navigate('/login', { state: { message: 'Please login to interact' } });
       return;
     }
     toggleLike(postId, currentUser.id);
-    setLiked((prev) => !prev);
+    setLiked((prev) => !prev);      //reverse state 
     setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
     if (!liked) {
       setBurst(true);

@@ -6,12 +6,12 @@ import { usePosts } from '../../hooks/usePosts';
 import PostForm from '../../components/post/PostForm';
 
 export default function CreatePost() {
-  const { currentUser } = useAuth();
-  const { createPost } = usePosts();
+  const { currentUser } = useAuth();  //current user info id,name , email 
+  const { createPost } = usePosts();    
   const navigate = useNavigate();
 
   const [isSubmittingDraft, setIsSubmittingDraft] = useState(false);
-  const [isSubmittingPublish, setIsSubmittingPublish] = useState(false);
+  const [isSubmittingPublish, setIsSubmittingPublish] = useState(false);      //loading states 
   const [draftMessage, setDraftMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [formKey, setFormKey] = useState(0); // bump to force PostForm to remount + clear

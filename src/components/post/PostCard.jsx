@@ -1,13 +1,17 @@
 // components/post/PostCard.jsx
+
+// render ui of asigle post , isy parent component(post) se prop milta h , ye post ke author ki info find kr ky avatar , name , date , description , image , like/comment actions show krta h 
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../../utils/storage';
-import { formatDate } from '../../utils/helpers';
+import { formatDate } from '../../utils/helpers';      //date ko readable form m convert krna 
 import Avatar from '../ui/Avatar';
-import PostActions from './PostActions';
+import PostActions from './PostActions';  // render like and comments button
 
 export default function PostCard({ post }) {
   const navigate = useNavigate();
+ 
 
+  //author find 
   const author = storage.getUsers().find((u) => u.id === post.authorId);
 
   function handleCardClick() {
@@ -27,7 +31,7 @@ export default function PostCard({ post }) {
       className="bg-white dark:bg-surface border border-ink/5 dark:border-surface-border rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300 cursor-pointer overflow-hidden animate-fadeUp"
     >
       <div className="p-4 flex items-center gap-3">
-        <button onClick={handleAuthorClick} className="shrink-0">
+        <button onClick={handleAuthorClick} className="shrink-0"> 
           <Avatar src={author.avatar} name={author.name} size="md" />
         </button>
         <div className="min-w-0">
@@ -58,7 +62,8 @@ export default function PostCard({ post }) {
       )}
 
       <div className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-        <PostActions postId={post.id} />
+        <PostActions postId={post.id} />  
+        {/* postAction ko post ki id milti h      */}
       </div>
     </article>
   );

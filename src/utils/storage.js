@@ -2,7 +2,7 @@
 // Every component that reads or writes localStorage goes through THIS file.
 // Never call localStorage.getItem/setItem directly from a component.
 
-const KEYS = {
+const KEYS = {     //define key for localstorage because in locala storage data save in key value pairs 
   USERS: 'users',
   POSTS: 'posts',
   COMMENTS: 'comments',
@@ -10,17 +10,19 @@ const KEYS = {
   CURRENT_USER: 'currentUser',
 };
 
-// Generic safe read/write so we don't repeat try/catch everywhere
-function read(key, fallback) {
+// Generic safe read/write so we don't repeat try/catch everywhere  
+function read(key, fallback) {       //reuseable function that read data from local storage  first key data read and fallback means if data is not available then what to show 
   try {
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
-  } catch (err) {
+  } catch (err) {         //if error occurs in read time catch execute 
     console.error(`storage: failed to read ${key}`, err);
     return fallback;
   }
 }
 
+
+//store data in local storage 
 function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -31,10 +33,12 @@ function write(key, value) {
   }
 }
 
+
+//object creation where every functon organaize in storage 
 export const storage = {
-  // Users
+  // Users 
   getUsers: () => read(KEYS.USERS, []),
-  setUsers: (users) => write(KEYS.USERS, users),
+  setUsers: (users) => write(KEYS.USERS, users), // save user array in storage 
 
   // Posts
   getPosts: () => read(KEYS.POSTS, []),
