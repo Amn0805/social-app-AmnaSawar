@@ -9,15 +9,9 @@ with a **Friend System**, **Real-Time Chat**, and **AI-powered features** using 
 
 ---
 
-## 🔗 Live Demo
-
-**[https://social-app-amna-sawar.vercel.app](https://social-app-amna-sawar-git-1b1577-amnasarwar3454-7568s-projects.vercel.app/)** 
-
----
-
 ## 🔗 Video Demo
 
-**[Video Demo](https://youtu.be/bt-7fvw0TYE)** 
+**[Video Demo](https://youtu.be/wkkGLiyzJVY)** 
 
 ---
 
