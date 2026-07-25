@@ -1,10 +1,9 @@
-
+// App.jsx
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import RequireAuth from './components/layout/RequireAuth';
-
 
 const FeedPage = lazy(() => import('./pages/FeedPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -18,6 +17,12 @@ const PostsDashboard = lazy(() => import('./pages/dashboard/PostsDashboard'));
 const CreatePost = lazy(() => import('./pages/dashboard/CreatePost'));
 const EditPost = lazy(() => import('./pages/dashboard/EditPost'));
 const ProfileSettings = lazy(() => import('./pages/dashboard/ProfileSettings'));
+const SavedPostsPage = lazy(() => import('./pages/dashboard/SavedPostsPage'));
+
+const PeoplePage = lazy(() => import('./pages/PeoplePage'));
+const FriendRequestsPage = lazy(() => import('./pages/FriendRequestsPage'));
+const FriendsPage = lazy(() => import('./pages/FriendsPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
 
 function PageLoader() {
   return (
@@ -41,6 +46,47 @@ export default function App() {
             <Route path="/profile/:userId" element={<ProfilePage />} />
 
             <Route
+              path="/people"
+              element={
+                <RequireAuth>
+                  <PeoplePage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/requests"
+              element={
+                <RequireAuth>
+                  <FriendRequestsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/friends"
+              element={
+                <RequireAuth>
+                  <FriendsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <RequireAuth>
+                  <ChatPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/chat/:userId"
+              element={
+                <RequireAuth>
+                  <ChatPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
               path="/dashboard"
               element={
                 <RequireAuth>
@@ -53,6 +99,7 @@ export default function App() {
               <Route path="create" element={<CreatePost />} />
               <Route path="edit/:postId" element={<EditPost />} />
               <Route path="settings" element={<ProfileSettings />} />
+              <Route path="saved" element={<SavedPostsPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

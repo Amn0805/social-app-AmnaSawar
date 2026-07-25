@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { compressImage } from '../../utils/helpers';
+import AIPostAssistant from '../ai/AIPostAssistant';
 import Button from '../ui/Button';
 
 const MAX_CHARS = 500;
@@ -15,9 +16,10 @@ export default function PostForm({
   isSubmittingPublish = false,
 }) {
   const {
-    register,             //data(discription name ky sath store hoti h )
+    register,
     handleSubmit,
-    watch,   // continusously watch discription and counter update 
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -35,13 +37,13 @@ export default function PostForm({
   const charCount = description.length;
 
   async function handleImageChange(e) {
-    const file = e.target.files?.[0];        //slected image milti h 
+    const file = e.target.files?.[0];
     if (!file) return;
     setImageError('');
     setIsProcessingImage(true);
     try {
-      const compressed = await compressImage(file);       //image compress hoti h 
-      setImagePreview(compressed);      //show on preview 
+      const compressed = await compressImage(file);
+      setImagePreview(compressed);
     } catch (err) {
       setImageError('Could not process that image. Try a different file.');
     } finally {
@@ -53,13 +55,13 @@ export default function PostForm({
     setImagePreview(null);
   }
 
-  function onSubmit(data) {          //after submission it runs 
+  function onSubmit(data) {
     const payload = {
       description: data.description.trim(),
       image: imagePreview,
       isPublic: data.isPublic === 'true',
     };
-    if (intendedAction === 'draft') {       //decision of draft and public 
+    if (intendedAction === 'draft') {
       onSaveDraft(payload);
     } else {
       onPublish(payload);
@@ -79,6 +81,10 @@ export default function PostForm({
       noValidate
       className="bg-white dark:bg-surface border border-ink/5 dark:border-surface-border rounded-2xl shadow-card p-6 space-y-5"
     >
+      <AIPostAssistant
+        onUseContent={(content) => setValue('description', content, { shouldValidate: true })}
+      />
+
       {/* Description */}
       <div>
         <label className="block text-sm font-medium text-ink/80 dark:text-paper/80 mb-1.5">

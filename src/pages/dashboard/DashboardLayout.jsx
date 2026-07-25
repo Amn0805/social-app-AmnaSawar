@@ -5,6 +5,7 @@ import clsx from 'clsx';
 const LINKS = [
   { to: '/dashboard/posts', label: 'My Posts', icon: PostsIcon },
   { to: '/dashboard/create', label: 'Create Post', icon: CreateIcon },
+  { to: '/dashboard/saved', label: 'Saved Posts', icon: SavedIcon },
   { to: '/dashboard/settings', label: 'Profile Settings', icon: SettingsIcon },
 ];
 
@@ -53,6 +54,13 @@ function CreateIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
       <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+function SavedIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
     </svg>
   );
 }

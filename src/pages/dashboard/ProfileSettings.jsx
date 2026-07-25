@@ -7,6 +7,7 @@ import { compressImage } from '../../utils/helpers';
 import Avatar from '../../components/ui/Avatar';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import AIProfileOptimize from '../../components/ai/AIProfileOptimize';
 
 const BIO_MAX = 150;
 
@@ -17,6 +18,7 @@ export default function ProfileSettings() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -34,6 +36,8 @@ export default function ProfileSettings() {
 
   const bio = watch('bio') || '';
   const bioCount = bio.length;
+  const watchedName = watch('name') || currentUser.name;
+  const watchedLocation = watch('location') || '';
 
   async function handleAvatarChange(e) {
     const file = e.target.files?.[0];
@@ -152,6 +156,15 @@ export default function ProfileSettings() {
               {bioCount} / {BIO_MAX}
             </span>
           </div>
+
+          <AIProfileOptimize
+            name={watchedName}
+            bio={bio}
+            location={watchedLocation}
+            onUseSuggestion={(suggestion) =>
+              setValue('bio', suggestion, { shouldValidate: true })
+            }
+          />
         </div>
 
         <Input label="Location" placeholder="e.g. Lahore, Pakistan" {...register('location')} />

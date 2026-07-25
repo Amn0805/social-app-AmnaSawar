@@ -5,6 +5,7 @@ import { formatDate } from '../utils/helpers';
 import { usePosts } from '../hooks/usePosts';
 import Avatar from '../components/ui/Avatar';
 import PostActions from '../components/post/PostActions';
+import BookmarkButton from '../components/post/BookmarkButton';
 import CommentSection from '../components/post/CommentSection';
 
 export default function PostDetailPage() {
@@ -59,12 +60,13 @@ export default function PostDetailPage() {
           />
         )}
 
-        <div className="px-5 py-4">
+        <div className="px-5 py-4 flex items-center justify-between">
           <PostActions postId={post.id} showComment={false} size="lg" />
+          <BookmarkButton postId={post.id} size="lg" />
         </div>
       </article>
 
-      <CommentSection postId={post.id} />
+      <CommentSection postId={post.id} postDescription={post.description} />
     </div>
   );
 }

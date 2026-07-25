@@ -1,13 +1,21 @@
 // components/profile/ProfileHeader.jsx
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
 import { formatJoinDate } from '../../utils/helpers';
 
-export default function ProfileHeader({ user, isOwner }) {
+export default function ProfileHeader({
+  user,
+  relationship,
+  onAddFriend,
+  onAccept,
+  onReject,
+  onUnfriend,
+}) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white dark:bg-surface border border-ink/5 dark:border-surface-border rounded-2xl overflow-hidden shadow-card animate-fadeUp">
-      {/* Cover */}
       <div
         className="h-40 sm:h-48 w-full bg-cover bg-center"
         style={
@@ -18,20 +26,57 @@ export default function ProfileHeader({ user, isOwner }) {
       />
 
       <div className="px-6 pb-6">
-        <div className="flex items-end justify-between -mt-10">
+        <div className="flex items-end justify-between -mt-10 gap-2">
           <Avatar
             src={user.avatar}
             name={user.name}
             size="lg"
             className="ring-4 ring-white dark:ring-surface"
           />
-          {isOwner && (
-            <Link to="/dashboard/settings" className="mb-1">
-              <Button variant="secondary" size="sm">
-                Edit Profile
+
+          <div className="mb-1 flex gap-2">
+            {relationship === 'self' && (
+              <Link to="/dashboard/settings">
+                <Button variant="secondary" size="sm">
+                  Edit Profile
+                </Button>
+              </Link>
+            )}
+
+            {relationship === 'none' && (
+              <Button size="sm" onClick={onAddFriend}>
+                Add Friend
               </Button>
-            </Link>
-          )}
+            )}
+
+            {relationship === 'request_sent' && (
+              <Button variant="secondary" size="sm" disabled className="opacity-60 cursor-not-allowed">
+                Request Sent
+              </Button>
+            )}
+
+            {relationship === 'request_received' && (
+              <>
+                <Button size="sm" onClick={onAccept}>
+                  Accept
+                </Button>
+                <Button variant="ghost" size="sm" onClick={onReject}>
+                  Reject
+                </Button>
+              </>
+            )}
+
+            {relationship === 'friends' && (
+              <>
+                <Button size="sm" onClick={() => navigate(`/chat/${user.id}`)}>
+                  Message
+                </Button>
+                <Button variant="ghost" size="sm" onClick={onUnfriend}>
+                  Unfriend
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         <h1 className="font-display text-xl font-semibold text-ink dark:text-paper mt-3">
